@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Devialet IP Control - driver.xml (SQUELETTE)
+    - Definit les capabilities, proprietes, connexions et le proxy.
+    - TODO CERTIF : les blocs marques doivent etre completes/valides
+      a partir du SDK (dossier media_service_proxy) et du Proxy/Protocol Guide.
+-->
+<devicedata>
+    <copyright>Copyright 2026</copyright>
+    <creator>Your Company</creator>
+    <manufacturer>Devialet</manufacturer>
+    <name>Devialet Speaker (IP Control)</name>
+    <model>Phantom</model>
+    <created>2026-07-08</created>
+    <modified>2026-07-08</modified>
+    <version>1</version>
+
+    <!-- Icone conforme aux templates du SDK (Icon Templates) -->
+    <!-- TODO CERTIF : fournir les icones aux dimensions requises -->
+
+    <!--
+        Proxy : pour une enceinte auto-streaming, la cible est le
+        Media Service Proxy (MSP) + gestion volume/audio.
+        TODO CERTIF : remplacer par la declaration exacte du MSP
+        (voir dossier media_service_proxy du SDK). Exemple minimal :
+    -->
+    <proxies qty="1">
+        <proxy proxybindingid="5001" name="Devialet Speaker">media_service</proxy>
+    </proxies>
+
+    <config>
+        <documentation>
+            <![CDATA[Driver squelette pour enceintes Devialet via l'API IP Control (HTTP + WebSocket).]]>
+        </documentation>
+
+        <properties>
+            <property>
+                <name>Device IP Address</name>
+                <type>STRING</type>
+                <default></default>
+                <readonly>false</readonly>
+            </property>
+            <property>
+                <name>Connection Status</name>
+                <type>STRING</type>
+                <default>Unknown</default>
+                <readonly>true</readonly>
+            </property>
+            <!-- TODO : ajouter Serial Number, Model (remplis via SDDP/mDNS) -->
+        </properties>
+    </config>
+
+    <!--
+        Connexions / bindings.
+        - Un binding proxy (5001) declare ci-dessus.
+        - Un binding reseau pour la couche HTTP/WebSocket.
+        TODO CERTIF : ajuster consumer/provider audio selon le modele
+        de donnees retenu (1 provider audio pour un speaker unique).
+    -->
+    <connections>
+        <connection>
+            <id>5001</id>
+            <facing>6</facing>
+            <connectionname>Devialet Speaker</connectionname>
+            <type>2</type>
+            <consumer>false</consumer>
+            <audiosource>true</audiosource>
+            <classes>
+                <class>
+                    <classname>AUDIO_SELECTABLE</classname>
+                </class>
+            </classes>
+        </connection>
+
+        <!-- Binding reseau (HTTP/WebSocket sortant) -->
+        <connection>
+            <id>6001</id>
+            <facing>6</facing>
+            <connectionname>Network</connectionname>
+            <type>1</type>
+            <consumer>true</consumer>
+            <classes>
+                <class>
+                    <classname>IP</classname>
+                </class>
+            </classes>
+        </connection>
+    </connections>
+
+    <!-- Commandes de test exposees dans ComposerPro (Actions) -->
+    <commands>
+        <command>
+            <name>Play</name>
+        </command>
+        <command>
+            <name>Pause</name>
+        </command>
+        <command>
+            <name>Reconnect WebSocket</name>
+        </command>
+    </commands>
+
+    <script file="driver.lua" />
+</devicedata>
