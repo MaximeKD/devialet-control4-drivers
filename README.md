@@ -1,4 +1,4 @@
-# Driver Devialet IP Control pour Control4 — Squelette
+# Driver Devialet IP Control pour Control4 — Squelette (v0.4)
 
 Point de départ pour un driver DriverWorks pilotant une enceinte Devialet
 auto-streaming via l'API **IP Control v1** (HTTP + WebSocket).
@@ -13,9 +13,11 @@ auto-streaming via l'API **IP Control v1** (HTTP + WebSocket).
   modèle d'abonnement Devialet (`subscriptionManagement` / `notification`).
   Une notification est envoyée immédiatement après abonnement et à chaque
   changement (≤ 10/s par endpoint) → pas de polling.
-- **Découverte** → mDNS `_devialet-http._tcp` (TXT : `manufacturer=Devialet`,
-  `ipControlVersion=1`, `path=/ipcontrol/v1`, `port`, `serialNumber`, `model`).
-  À terme, exposer en **SDDP** pour l'auto-découverte côté intégrateur.
+- **Découverte** → **saisie d'IP manuelle** (propriété `Device IP Address`).
+  En stéréo, pointer de préférence sur le **system leader** (le driver le
+  détecte via l'API et le signale dans `Operational Status` sinon).
+  mDNS/SDDP écartés pour l'instant (DriverWorks n'a pas de module mDNS natif ;
+  le SDDP dépendrait d'un firmware Devialet à confirmer).
 
 ## Fichiers
 
@@ -51,12 +53,16 @@ Puis charger dans ComposerPro, ou valider en ligne de commande avec le
 
 Points marqués `-- TODO CERTIF` dans le code, à traiter :
 
-- [ ] Remplacer le proxy `media_service` par la déclaration exacte du **Media
-      Service Proxy** (dossier `media_service_proxy` du SDK) et implémenter ses
-      commandes (navigation de sources, sélection de service, métadonnées, coverArt).
+- [x] MSP câblé (transport PLAY/PAUSE/STOP/SKIP + UPDATE_MEDIA_INFO + ProgressChanged
+      + DashboardChanged), UI XML Now Playing/Dashboard (d'après MSP By Numbers).
+- [ ] MSP navigation/browse des services (List + DATA_RECEIVED) et file d'attente (queue).
+- [x] Mapping métadonnées + progression confirmé (metadata.*, coverArtUrl, duration ms, playingState, muteState, availableOperations, playback/position ms).
 - [ ] Mapper volume/mute/play/pause vers le proxy et le **slider de volume OS3**.
-- [ ] Valider les chemins `.../current/...` sur le matériel : vérifier si le
-      stéréo apparaît comme **1 device** ou **1 system à 2 devices**.
+- [x] Topologie stéréo validée : 1 system = 2 devices (FrontLeft/FrontRight).
+- [x] Résolution du system leader + routage de toutes les commandes vers lui.
+- [x] Découverte par IP manuelle (mDNS/SDDP écartés).
+- [x] Infrastructure de debug (Debug Mode / Level / Subsystems) + auto-off
+- [x] Proprietes de statut (Operational Status / Internal State)
 - [ ] Reconnexion WebSocket robuste (redémarrage / changement d'IP de l'enceinte).
 - [ ] Icônes aux normes (Icon Templates).
 - [ ] Aucune API dépréciée (pas de `io.popen`).
